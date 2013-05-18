@@ -1,0 +1,20 @@
+[
+{
+	"modid": "PvPMod",
+	"name": "PvP-Mod",
+	"description": "Fight Steve, Herbrine and Notch! Become the king!",
+	"version": "2.3",
+	"url": "",
+	"updateUrl": "",
+	"authorList": [
+		"Ry_Dog101"
+	],
+	"credits": "By Ry_dog101",
+	"logoFile": "/mods/PvPMod/textures/logo/logo.png",
+	"screenshots": [
+	],
+	"parent": "",
+	"dependencies": [
+	]
+}
+]

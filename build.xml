@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="PvP-Mod" basedir="." default="all">
+	<property environment="env"/>
+	<!-- Properties -->
+	<property name="build.dir" value="ant" />
+	<property name="src.dir" value="common" />
+	<property name="resource.dir" value="PvPMod_resources" />
+	
+	<property name="mcp.dir" value="../../mcp/mcp751/forge/" />
+	<property name="mcpsrc.dir" value="${mcp.dir}/src" />
+	
+	<property name="mc.version" value="1.5.1"/>
+	<property name="forge.version" value="7.8.0.703"/>
+	<property name="project.version" value="2.3"/>
+	
+	<property name="python" location="${mcp.dir}/runtime/bin/python/python_mcp.exe" />
+	<!-- Targets -->
+	
+	<target name="Setup">
+		<echo message="Copying sources to required locations" />
+		<delete dir="${mcpsrc.dir}/minecraft" />
+		<copy todir="${mcpsrc.dir}/minecraft" verbose="true">
+			<fileset dir="${mcpsrc.dir}/clean/minecraft" />
+			<fileset dir="${src.dir}" />
+		</copy>
+	</target>
+	
+	<target name="init" description="Initialize build environment">
+		<echo message="Cleaning old build and dist, MCP reobf directories" />
+		<delete dir="${build.dir}/build" />
+		<delete dir="${build.dir}/release" />
+		<delete dir="${mcp.dir}/reobf" />
+
+		<echo message="Creating build and dist dirs" />
+		<mkdir dir="${build.dir}/build" />
+		<mkdir dir="${build.dir}/release" />
+	</target>
+	
+	<target name="recompile" description="MCP recompile">
+		<exec executable="${python}" dir="${mcp.dir}">
+			<arg value="runtime/recompile.py" />
+			<arg value="%*" />
+		</exec>
+	</target>
+	
+	<target name="reobfuscate" description="MCP reobfuscate">
+		<exec executable="${python}" dir="${mcp.dir}">
+			<arg value="runtime/reobfuscate.py" />
+			<arg value="%*" />
+		</exec>
+	</target>
+	
+	<target name="stage" description="Stage resources into build directory">
+		<copy todir="${build.dir}/build">
+			<fileset dir="${mcp.dir}/reobf/minecraft" excludes=".svn/**, *.txt" />
+			<fileset dir="${resource.dir}" excludes=".svn/**" />
+			<fileset file="${src.dir}/mcmod.info" />
+		</copy>
+	</target>
+	
+	<target name="all" description="Perform all tasks for a build" depends="Setup, init, recompile, reobfuscate, stage, jar">
+		<echo message="MCP Ant Build Completed!" />
+	</target>
+	
+	<target name="jar" description=".jar the project's dist output">
+		<mkdir dir="${build.dir}/release" />
+		<jar destfile="${build.dir}/release/${ant.project.name}-${mc.version}-${project.version}.jar" duplicate="preserve" index="true" manifestencoding="UTF-8">
+			<manifest>
+				<attribute name="Implementation-Vendor" value="${author}" />
+				<attribute name="Implementation-Title" value="${ant.project.name}" />
+				<attribute name="Implementation-Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build.dir}/build" />
+		</jar>
+	</target>
+	
+</project>
